@@ -1,0 +1,66 @@
+---
+- name: Install
+  hosts: all
+
+  vars: {}
+
+  tasks:
+    - name: "Install packages from pkg"
+      pkgng:
+        name: "{{item}}"
+        state: present
+      with_items:
+      - openjdk8
+      - bash
+      - rinetd
+
+    - name: Download youtrack
+      get_url:
+        url: https://download-cf.jetbrains.com/charisma/youtrack-2018.2.42284.zip
+        dest: /usr/local/hub-2018.2.9635.zip
+        checksum: sha256:0a50d624c692fbcf92ee5254595dacd5302fe2b6f253e6e91c7618d0da12d5aa
+
+    - name: Unarchive youtrack
+      shell: "unzip youtrack-2018.2.42284.zip"
+      args:
+        chdir: /usr/local
+        creates: /usr/local/youtrack-2018.2.42284
+
+    - name: Enable the rinetd service
+      shell: "sysrc rinetd_enable=YES"
+
+    # - lineinfile:
+    #     path: /usr/local/etc/rinetd.conf
+    #     regexp: '.*8080$'
+    #     line: "{{ansible_default_ipv4.address}} 80 {{ansible_default_ipv4.address}} 8080"
+    #     create: True
+    #
+    # - lineinfile:
+    #     path: /usr/local/etc/rinetd.conf
+    #     line: "logfile /var/log/rinetd.log"
+    #
+    # - lineinfile:
+    #     path: /usr/local/etc/rinetd.conf
+    #     line: "logcommon"
+    #
+    # - name: Start the rinetd daemon
+    #   service:
+    #     name: rinetd
+    #     state: started
+    #     enabled: yes
+
+    # - template:
+    #     src: service.j2
+    #     dest: /usr/local/etc/rc.d/youtrack
+    #     owner: root
+    #     group: wheel
+    #     mode: "u=rwx,g=r,o=r"
+
+    - name: Enable the hub service
+      shell: "sysrc youtrack_enable=YES"
+
+    - name: Start the hub daemon
+      service:
+        name: hub
+        state: started
+        enabled: yes

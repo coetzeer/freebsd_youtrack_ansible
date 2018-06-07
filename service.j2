@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# PROVIDE: youtrack
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=youtrack
+desc="Jetbrains Youtrack"
+rcvar=youtrack_enable
+
+load_rc_config "${name}"
+
+: ${youtrack_enable:=NO}
+
+pidfile=/var/run/${name}/${name}.pid
+logfile=/var/log/${name}.log
+start_precmd=do_prestart
+start_cmd=do_start
+command=/usr/sbin/daemon
+{% if ansible_distribution_major_version == 10 %}
+command_args="-P ${pidfile} -o ${logfile} -u root /usr/local/hub-2018.2.9635/bin/hub.sh run"
+{% else %}
+command_args="-P ${pidfile} -t ${name} -o ${logfile} -u root /usr/local/hub-2018.2.9635/bin/hub.sh run"
+{% endif %}
+
+do_prestart()
+{
+        if [ ! -f "${logfile}" ]; then
+                #install -o "${jenkins_user}" -g "${jenkins_group}" -m 640 /dev/null "${jenkins_log_file}"
+                touch ${logfile}
+        fi
+        if [ ! -d "/var/run/${name}/" ]; then
+                install -d -o "root" -g "wheel" -m 750 "/var/run/${name}"
+        fi
+}
+
+do_start()
+{
+        check_startmsgs && echo "Starting ${name}."
+        exec ${command} ${command_args}
+
+}
+
+run_rc_command "$1"
