@@ -17,7 +17,7 @@
     - name: Download youtrack
       get_url:
         url: https://download-cf.jetbrains.com/charisma/youtrack-2018.2.42284.zip
-        dest: /usr/local/hub-2018.2.9635.zip
+        dest: /usr/local/youtrack-2018.2.42284.zip
         checksum: sha256:0a50d624c692fbcf92ee5254595dacd5302fe2b6f253e6e91c7618d0da12d5aa
 
     - name: Unarchive youtrack
