@@ -19,7 +19,7 @@ logfile=/var/log/${name}.log
 start_precmd=do_prestart
 start_cmd=do_start
 command=/usr/sbin/daemon
-{% if ansible_distribution_major_version == 10 %}
+{% if '10.4-RELEASE' in ansible_env.SUDO_COMMAND %}
 command_args="-P ${pidfile} -o ${logfile} -u root /usr/local/youtrack-2018.2.42284/bin/youtrack.sh run"
 {% else %}
 command_args="-P ${pidfile} -t ${name} -o ${logfile} -u root /usr/local/youtrack-2018.2.42284/bin/youtrack.sh run"
